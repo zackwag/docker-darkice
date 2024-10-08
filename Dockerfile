@@ -1,16 +1,21 @@
-FROM ubuntu:artful
-LABEL maintainer "j"
+FROM alpine:latest
 
-ENV DEBIAN_FRONTEND noninteractive
+# Set environment variable to disable interactive prompts
+ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-        darkice=1.3-0.1 \
-    && apt-get autoclean \
-    && apt-get autoremove \
-    && rm -rf /var/lib/apt/lists/*
+# Define the DarkIce version as a build argument
+ARG DARKICE_VERSION=1.4-r2
 
+# Install necessary packages and DarkIce
+RUN apk add --no-cache \
+    alsa-lib \
+    darkice=$DARKICE_VERSION \
+    lame \
+    libshout \
+    sox
+
+# Copy your configuration file
 COPY darkice.cfg /etc/
 
+# Set the entry point for the container
 ENTRYPOINT [ "darkice" ]
-
